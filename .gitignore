@@ -1,0 +1,14 @@
+# Środowisko wirtualne
+.venv/
+venv/
+
+# Pliki kompilacji PyInstaller
+build/
+dist/
+*.spec
+
+# Pamięć podręczna Pythona i PyCharma
+__pycache__/
+*.pyc
+.idea/
+.vscode/
