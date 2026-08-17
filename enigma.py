@@ -1,127 +1,135 @@
 import customtkinter as ctk
+from typing import List
 
 
-def zaszyfruj_tekst(tekst_wejsciowy: str) -> str:
-    alfabet = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U',
-               'V',
-               'W', 'X', 'Y', 'Z']
-    prze = ['U', 'B', 'C', 'D', 'I', 'F', 'G', 'H', 'E', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'A',
-            'V',
-            'W', 'X', 'Y', 'Z']
-    przes1 = int(0)
-    przes2 = int(0)
-    przes3 = int(0)
-    przes4 = int(0)
-    przes5 = int(0)
-    przes6 = int(0)
+ALPHABET: List[str] = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z']
 
-    pierścień1 = ['E', 'K', 'M', 'F', 'L', 'G', 'D', 'Q', 'V', 'Z', 'N', 'T', 'O', 'W', 'Y', 'H', 'X', 'U', 'S', 'P',
-                  'A',
-                  'I', 'B', 'R', 'C', 'J']
-    pierścień2 = ['A', 'J', 'D', 'K', 'S', 'I', 'R', 'U', 'X', 'B', 'L', 'H', 'W', 'T', 'M', 'C', 'Q', 'G', 'Z', 'N',
-                  'P',
-                  'Y', 'F', 'V', 'O', 'E']
-    pierścień3 = ['B', 'D', 'F', 'H', 'J', 'L', 'C', 'P', 'R', 'T', 'X', 'V', 'Z', 'N', 'Y', 'E', 'I', 'W', 'G', 'A',
-                  'K',
-                  'M', 'U', 'S', 'Q', 'O']
-    pierścieńB = ['Y', 'R', 'U', 'H', 'Q', 'S', 'L', 'D', 'P', 'X', 'N', 'G', 'O', 'K', 'M', 'I', 'E', 'B', 'F', 'Z',
-                  'C',
-                  'W', 'V', 'J', 'A', 'T']
 
-    for k in range(przes4):
-        z, n, p = [], 0, 26
-        for v in pierścień1:
-            if n == 0:
-                n += 1
-                z.append(pierścień1[p - 1])
-        for y in range(0, p - 1):
-            z.append(pierścień1[y])
-        pierścień1 = z
+class Plugboard:
+    """Handles character substitution on input and output."""
+    
+    def __init__(self, wiring: List[str]) -> None:
+        """Initialize plugboard with substitution wiring."""
+        self.wiring = wiring
+    
+    def substitute(self, char: str) -> str:
+        """Substitute character through plugboard wiring."""
+        if char not in ALPHABET:
+            return char
+        return self.wiring[ALPHABET.index(char)]
 
-    for k in range(przes5):
-        z, n, p = [], 0, 26
-        for v in pierścień2:
-            if n == 0:
-                n += 1
-                z.append(pierścień2[p - 1])
-        for y in range(0, p - 1):
-            z.append(pierścień2[y])
-        pierścień2 = z
 
-    for k in range(przes6):
-        z, n, p = [], 0, 26
-        for v in pierścień3:
-            if n == 0:
-                n += 1
-                z.append(pierścień3[p - 1])
-        for y in range(0, p - 1):
-            z.append(pierścień3[y])
-        pierścień3 = z
+class Rotor:
+    """Represents a single Enigma rotor with wiring and rotation."""
+    
+    def __init__(self, wiring: List[str], position: int = 0) -> None:
+        """Initialize rotor with wiring and starting position."""
+        self.wiring = wiring.copy()
+        self.position = position
+        self.rotation_count = 0
+    
+    def forward(self, char: str) -> str:
+        """Pass character through rotor in forward direction."""
+        if char not in ALPHABET:
+            return char
+        return self.wiring[ALPHABET.index(char)]
+    
+    def backward(self, char: str) -> str:
+        """Pass character through rotor in reverse direction."""
+        if char not in ALPHABET:
+            return char
+        return ALPHABET[self.wiring.index(char)]
+    
+    def rotate(self) -> None:
+        """Rotate rotor by one position using modulo arithmetic."""
+        self.wiring = [self.wiring[-1]] + self.wiring[:-1]
+        self.rotation_count += 1
+    
+    def reset_rotation_count(self) -> None:
+        """Reset rotation count to zero."""
+        self.rotation_count = 0
 
-    wyraz1 = tekst_wejsciowy.upper()
-    wyrazp, wyrazk, wyrazh = "", "", ""
 
-    for p in wyraz1:
-        if p in alfabet:
-            wyrazp += prze[alfabet.index(p)]
+class Reflector:
+    """Represents the reflector (Reflector B)."""
+    
+    def __init__(self, wiring: List[str]) -> None:
+        """Initialize reflector with wiring."""
+        self.wiring = wiring
+    
+    def reflect(self, char: str) -> str:
+        """Reflect character through reflector wiring."""
+        if char not in ALPHABET:
+            return char
+        return self.wiring[ALPHABET.index(char)]
 
-    wyraz1 = wyrazp
-    for i in wyraz1:
-        wyraz2, wyraz3, wyraz4, wyraz5, wyraz6, wyraz7, wyraz8 = "", "", "", "", "", "", ""
-        wyraz2 += pierścień1[alfabet.index(i)]
-        wyraz3 += pierścień2[alfabet.index(wyraz2)]
-        wyraz4 += pierścień3[alfabet.index(wyraz3)]
-        wyraz5 += pierścieńB[alfabet.index(wyraz4)]
-        wyraz6 += alfabet[pierścień3.index(wyraz5)]
-        wyraz7 += alfabet[pierścień2.index(wyraz6)]
-        wyraz8 += alfabet[pierścień1.index(wyraz7)]
 
-        z, n, p = [], 0, len(pierścień1)
-        for v in pierścień1:
-            if n == 0:
-                n += 1
-                z.append(pierścień1[p - 1])
-        for y in range(0, p - 1):
-            z.append(pierścień1[y])
-        pierścień1 = z
-        przes2 += 1
-
-        z, n = [], 0
-        if przes2 == 26:
-            for v in pierścień2:
-                if n == 0:
-                    n += 1
-                    z.append(pierścień2[p - 1])
-            for y in range(0, p - 1):
-                z.append(pierścień2[y])
-            pierścień2 = z
-            przes2 = 0
-            przes3 += 1
-
-        z, n = [], 0
-        if przes3 == 26:
-            for v in pierścień3:
-                if n == 0:
-                    n += 1
-                    z.append(pierścień3[p - 1])
-            for y in range(0, p - 1):
-                z.append(pierścień3[y])
-            pierścień3 = z
-            przes3 = 0
-
-        wyrazk += wyraz8
-
-    for h in wyrazk:
-        wyrazh += prze[alfabet.index(h)]
-
-    return wyrazh
+class EnigmaEngine:
+    """Manages the full Enigma encryption process."""
+    
+    def __init__(self) -> None:
+        """Initialize Enigma engine with rotors I, II, III and Reflector B."""
+        plugboard_wiring = ['U', 'B', 'C', 'D', 'I', 'F', 'G', 'H', 'E', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'A', 'V', 'W', 'X', 'Y', 'Z']
+        rotor_i_wiring = ['E', 'K', 'M', 'F', 'L', 'G', 'D', 'Q', 'V', 'Z', 'N', 'T', 'O', 'W', 'Y', 'H', 'X', 'U', 'S', 'P', 'A', 'I', 'B', 'R', 'C', 'J']
+        rotor_ii_wiring = ['A', 'J', 'D', 'K', 'S', 'I', 'R', 'U', 'X', 'B', 'L', 'H', 'W', 'T', 'M', 'C', 'Q', 'G', 'Z', 'N', 'P', 'Y', 'F', 'V', 'O', 'E']
+        rotor_iii_wiring = ['B', 'D', 'F', 'H', 'J', 'L', 'C', 'P', 'R', 'T', 'X', 'V', 'Z', 'N', 'Y', 'E', 'I', 'W', 'G', 'A', 'K', 'M', 'U', 'S', 'Q', 'O']
+        reflector_b_wiring = ['Y', 'R', 'U', 'H', 'Q', 'S', 'L', 'D', 'P', 'X', 'N', 'G', 'O', 'K', 'M', 'I', 'E', 'B', 'F', 'Z', 'C', 'W', 'V', 'J', 'A', 'T']
+        
+        self.plugboard = Plugboard(plugboard_wiring)
+        self.rotor1 = Rotor(rotor_i_wiring)
+        self.rotor2 = Rotor(rotor_ii_wiring)
+        self.rotor3 = Rotor(rotor_iii_wiring)
+        self.reflector = Reflector(reflector_b_wiring)
+    
+    def encrypt(self, text: str) -> str:
+        """Encrypt text through full Enigma path with rotor cascade."""
+        text = text.upper()
+        result = ""
+        
+        for char in text:
+            if char not in ALPHABET:
+                result += char
+                continue
+            
+            # Forward path: Plugboard -> Rotor1 -> Rotor2 -> Rotor3 -> Reflector
+            char = self.plugboard.substitute(char)
+            char = self.rotor1.forward(char)
+            char = self.rotor2.forward(char)
+            char = self.rotor3.forward(char)
+            char = self.reflector.reflect(char)
+            
+            # Reverse path: Rotor3 -> Rotor2 -> Rotor1 -> Plugboard
+            char = self.rotor3.backward(char)
+            char = self.rotor2.backward(char)
+            char = self.rotor1.backward(char)
+            char = self.plugboard.substitute(char)
+            
+            result += char
+            
+            # Cascade rotor rotation
+            self._rotate_rotors()
+        
+        return result
+    
+    def _rotate_rotors(self) -> None:
+        """Handle cascading rotor rotation."""
+        self.rotor1.rotate()
+        
+        if self.rotor1.rotation_count == 26:
+            self.rotor2.rotate()
+            self.rotor1.reset_rotation_count()
+        
+        if self.rotor2.rotation_count == 26:
+            self.rotor3.rotate()
+            self.rotor2.reset_rotation_count()
 
 
 # --- LOGIKA GUI ---
 def akcja_szyfruj():
     wprowadzony_tekst = pole_tekstowe.get()
     if wprowadzony_tekst:
-        wynik = zaszyfruj_tekst(wprowadzony_tekst)
+        engine = EnigmaEngine()
+        wynik = engine.encrypt(wprowadzony_tekst)
         etykieta_wyniku.configure(text=f"Wynik: {wynik}")
 
 
