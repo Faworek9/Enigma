@@ -131,6 +131,28 @@ def akcja_szyfruj():
         engine = EnigmaEngine()
         wynik = engine.encrypt(wprowadzony_tekst)
         etykieta_wyniku.configure(text=f"Wynik: {wynik}")
+        
+        # Add to history
+        pole_historii.configure(state="normal")
+        pole_historii.insert("end", f"{wprowadzony_tekst.upper()} -> {wynik}\n")
+        pole_historii.configure(state="disabled")
+        pole_historii.see("end")
+
+
+def kopiuj_wynik():
+    wynik_tekst = etykieta_wyniku.cget("text")
+    if wynik_tekst.startswith("Wynik: "):
+        wynik = wynik_tekst.replace("Wynik: ", "")
+        app.clipboard_clear()
+        app.clipboard_append(wynik)
+        przycisk_kopiuj.configure(text="Skopiowano!")
+        app.after(1500, lambda: przycisk_kopiuj.configure(text="Kopiuj wynik"))
+
+
+def wyczysc_historie():
+    pole_historii.configure(state="normal")
+    pole_historii.delete("1.0", "end")
+    pole_historii.configure(state="disabled")
 
 
 # --- KONFIGURACJA OKNA DESKTOPOWEGO ---
@@ -139,7 +161,7 @@ ctk.set_default_color_theme("blue")
 
 app = ctk.CTk()
 app.title("Enigma Desktop")
-app.geometry("400x300")
+app.geometry("400x500")
 
 tytul = ctk.CTkLabel(app, text="Szyfrator Enigma", font=("Arial", 20, "bold"))
 tytul.pack(pady=15)
@@ -151,7 +173,19 @@ przycisk = ctk.CTkButton(app, text="Zaszyfruj", command=akcja_szyfruj)
 przycisk.pack(pady=10)
 
 etykieta_wyniku = ctk.CTkLabel(app, text="Wynik pojawi się tutaj", font=("Arial", 14))
-etykieta_wyniku.pack(pady=20)
+etykieta_wyniku.pack(pady=5)
+
+przycisk_kopiuj = ctk.CTkButton(app, text="Kopiuj wynik", command=kopiuj_wynik, width=150)
+przycisk_kopiuj.pack(pady=5)
+
+etykieta_historii = ctk.CTkLabel(app, text="Historia szyfrowań:", font=("Arial", 12))
+etykieta_historii.pack(pady=(15, 5))
+
+pole_historii = ctk.CTkTextbox(app, width=300, height=150, state="disabled")
+pole_historii.pack(pady=5)
+
+przycisk_wyczysc = ctk.CTkButton(app, text="Wyczyść historię", command=wyczysc_historie, width=150)
+przycisk_wyczysc.pack(pady=5)
 
 if __name__ == "__main__":
     app.mainloop()
