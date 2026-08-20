@@ -5,7 +5,7 @@ from engine import EnigmaEngine
 
 # --- LOGIKA GUI ---
 def akcja_szyfruj():
-    wprowadzony_tekst = pole_tekstowe.get()
+    wprowadzony_tekst = pole_tekstowe.get("1.0", "end").strip()
     if wprowadzony_tekst:
         # Convert position letters (A-Z) to indices (0-25)
         rotor_positions = [ord(menu_rotor1_pos.get()) - ord('A'), ord(menu_rotor2_pos.get()) - ord('A'), ord(menu_rotor3_pos.get()) - ord('A')]
@@ -148,7 +148,7 @@ wirniki = ["I", "II", "III"]
 ctk.CTkLabel(ramka_rotory, text="Miejsce").grid(row=0, column=0, padx=8, pady=(8, 4))
 ctk.CTkLabel(ramka_rotory, text="Wirnik").grid(row=0, column=1, padx=8, pady=(8, 4))
 ctk.CTkLabel(ramka_rotory, text="Pozycja").grid(row=0, column=2, padx=8, pady=(8, 4))
-ctk.CTkLabel(ramka_rotory, text="Pierścień").grid(row=0, column=3, padx=8, pady=(8, 4))
+ctk.CTkLabel(ramka_rotory, text="Ustawienie").grid(row=0, column=3, padx=8, pady=(8, 4))
 
 ctk.CTkLabel(ramka_rotory, text="1").grid(row=1, column=0, padx=8, pady=4)
 menu_rotor1_order = ctk.CTkOptionMenu(ramka_rotory, values=wirniki, width=80)
@@ -192,7 +192,7 @@ menu_plugboard = ctk.CTkOptionMenu(app, values=presety_plugboard, width=200)
 menu_plugboard.set("Brak")
 menu_plugboard.pack(pady=5)
 
-pole_tekstowe = ctk.CTkEntry(app, placeholder_text="Wpisz słowo...", width=250)
+pole_tekstowe = ctk.CTkTextbox(app, width=300, height=150)
 pole_tekstowe.pack(pady=10)
 
 przycisk = ctk.CTkButton(app, text="Zaszyfruj", command=akcja_szyfruj)
