@@ -1,4 +1,6 @@
 import customtkinter as ctk
+import json
+from tkinter import filedialog
 from engine import EnigmaEngine
 
 # --- LOGIKA GUI ---
@@ -66,6 +68,59 @@ def resetuj_ustawienia():
     menu_rotor3_ring.set("1")
     menu_plugboard.set("Brak")
     etykieta_wyniku.configure(text="Wynik pojawi się tutaj")
+
+
+def zapisz_konfiguracje():
+    konfiguracja = {
+        "rotor1_order": menu_rotor1_order.get(),
+        "rotor2_order": menu_rotor2_order.get(),
+        "rotor3_order": menu_rotor3_order.get(),
+        "rotor1_pos": menu_rotor1_pos.get(),
+        "rotor2_pos": menu_rotor2_pos.get(),
+        "rotor3_pos": menu_rotor3_pos.get(),
+        "rotor1_ring": menu_rotor1_ring.get(),
+        "rotor2_ring": menu_rotor2_ring.get(),
+        "rotor3_ring": menu_rotor3_ring.get(),
+        "plugboard_preset": menu_plugboard.get()
+    }
+    
+    sciezka = filedialog.asksaveasfilename(
+        defaultextension=".json",
+        filetypes=[("Pliki JSON", "*.json"), ("Wszystkie pliki", "*.*")],
+        title="Zapisz konfigurację Enigmy"
+    )
+    
+    if sciezka:
+        with open(sciezka, 'w', encoding='utf-8') as f:
+            json.dump(konfiguracja, f, indent=4, ensure_ascii=False)
+        etykieta_wyniku.configure(text="Konfiguracja zapisana!")
+
+
+def wczytaj_konfiguracje():
+    sciezka = filedialog.askopenfilename(
+        filetypes=[("Pliki JSON", "*.json"), ("Wszystkie pliki", "*.*")],
+        title="Wczytaj konfigurację Enigmy"
+    )
+    
+    if sciezka:
+        try:
+            with open(sciezka, 'r', encoding='utf-8') as f:
+                konfiguracja = json.load(f)
+            
+            menu_rotor1_order.set(konfiguracja.get("rotor1_order", "I"))
+            menu_rotor2_order.set(konfiguracja.get("rotor2_order", "II"))
+            menu_rotor3_order.set(konfiguracja.get("rotor3_order", "III"))
+            menu_rotor1_pos.set(konfiguracja.get("rotor1_pos", "A"))
+            menu_rotor2_pos.set(konfiguracja.get("rotor2_pos", "A"))
+            menu_rotor3_pos.set(konfiguracja.get("rotor3_pos", "A"))
+            menu_rotor1_ring.set(konfiguracja.get("rotor1_ring", "1"))
+            menu_rotor2_ring.set(konfiguracja.get("rotor2_ring", "1"))
+            menu_rotor3_ring.set(konfiguracja.get("rotor3_ring", "1"))
+            menu_plugboard.set(konfiguracja.get("plugboard_preset", "Brak"))
+            
+            etykieta_wyniku.configure(text="Konfiguracja wczytana!")
+        except Exception as e:
+            etykieta_wyniku.configure(text=f"Błąd wczytywania: {str(e)}")
 
 
 # --- KONFIGURACJA OKNA DESKTOPOWEGO ---
@@ -151,6 +206,16 @@ przycisk_kopiuj.pack(pady=5)
 
 przycisk_reset = ctk.CTkButton(app, text="Powrót do ustawień początkowych", command=resetuj_ustawienia, width=200)
 przycisk_reset.pack(pady=5)
+
+# Configuration save/load buttons
+ramka_konfiguracji = ctk.CTkFrame(app)
+ramka_konfiguracji.pack(pady=10)
+
+przycisk_zapisz = ctk.CTkButton(ramka_konfiguracji, text="💾 Zapisz konfigurację", command=zapisz_konfiguracje, width=150)
+przycisk_zapisz.grid(row=0, column=0, padx=5, pady=5)
+
+przycisk_wczytaj = ctk.CTkButton(ramka_konfiguracji, text="📂 Wczytaj konfigurację", command=wczytaj_konfiguracje, width=150)
+przycisk_wczytaj.grid(row=0, column=1, padx=5, pady=5)
 
 etykieta_historii = ctk.CTkLabel(app, text="Historia szyfrowań:", font=("Arial", 12))
 etykieta_historii.pack(pady=(15, 5))

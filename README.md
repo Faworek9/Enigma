@@ -14,6 +14,7 @@ Profesjonalna aplikacja desktopowa w języku Python, która wiernie odwzorowuje 
 - **🔌 Łącznica kablowa (Plugboard)** – obsługa pustej łącznicy oraz presetów upamiętniających polskich kryptologów
 - **🎯 Dynamiczny stan maszyny** – wirniki w GUI obracają się na żywo podczas szyfrowania i pozostają w nowej pozycji
 - **🔄 Szybki reset** – przycisk "Powrót do ustawień początkowych" pozwala przywrócić domyślną konfigurację
+- **💾 Zapis/ładowanie konfiguracji** – możliwość zapisania ustawień do pliku JSON i ich wczytania dla późniejszego użycia
 - **📋 Historia szyfrowań** – automatyczne zapisywanie operacji w oknie historii
 - **📑 Kopiowanie do schowka** – szybkie kopiowanie wyniku jednym kliknięciem
 
@@ -137,6 +138,21 @@ Kliknij przycisk **"Powrót do ustawień początkowych"**, aby:
 - Zresetować pierścienie do: 1, 1, 1
 - Ustawić łącznicę na: "Brak"
 - Wyczyścić etykietę wyniku
+
+### Zapis i ładowanie konfiguracji
+
+Aby zapisać aktualne ustawienia:
+1. Skonfiguruj wirniki i łącznicę według potrzeb
+2. Kliknij przycisk **"💾 Zapisz konfigurację"**
+3. Wybierz lokalizację i nazwę pliku JSON
+4. Wszystkie ustawienia zostaną zapisane do pliku
+
+Aby wczytać zapisaną konfigurację:
+1. Kliknij przycisk **"📂 Wczytaj konfigurację"**
+2. Wybierz plik JSON z zapisanymi ustawieniami
+3. Wszystkie parametry zostaną przywrócone do zapisanych wartości
+
+Ta funkcja jest szczególnie przydatna przy wielokrotnym używaniu tych samych ustawień szyfrowania.
 
 ---
 
