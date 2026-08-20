@@ -64,7 +64,7 @@ def resetuj_ustawienia():
     menu_rotor1_ring.set("1")
     menu_rotor2_ring.set("1")
     menu_rotor3_ring.set("1")
-    menu_plugboard.set("Domyślny")
+    menu_plugboard.set("Brak")
     etykieta_wyniku.configure(text="Wynik pojawi się tutaj")
 
 
