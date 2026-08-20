@@ -10,7 +10,7 @@ Profesjonalna aplikacja desktopowa w języku Python, która wiernie odwzorowuje 
 ## ✨ Główne Cechy
 
 - **🔄 Pełna symetria szyfrowania** – szyfrowanie i odszyfrowywanie odbywa się tymi samymi ustawieniami, zgodnie z zasadą działania Enigmy I
-- **⚙️ Konfiguracja wirników** – pełna kontrola nad trzema wirnikami (I, II, III) z możliwością wyboru pozycji startowej (A–Z) i ustawienia pierścienia (1–26)
+- **⚙️ Konfiguracja wirników** – pełna kontrola nad pięcioma historycznymi wirnikami (I, II, III, IV, V) z możliwością wyboru pozycji startowej (A–Z) i ustawienia pierścienia (1–26)
 - **🔌 Łącznica kablowa (Plugboard)** – obsługa pustej łącznicy oraz presetów upamiętniających polskich kryptologów
 - **🎯 Dynamiczny stan maszyny** – wirniki w GUI obracają się na żywo podczas szyfrowania i pozostają w nowej pozycji
 - **🔄 Szybki reset** – przycisk "Powrót do ustawień początkowych" pozwala przywrócić domyślną konfigurację
@@ -48,7 +48,7 @@ Enigma/
 
 ### engine.py
 Silnik kryptograficzny realizujący pełny mechanizm Enigmy I:
-- **Klasa Rotor** – obsługa wirników z nacięciami (notches) i mechanizmem double-stepping
+- **Klasa Rotor** – obsługa 5 historycznych wirników (I, II, III, IV, V) z nacięciami (notches) i mechanizmem double-stepping
 - **Klasa Reflector** – implementacja reflektora B
 - **Klasa Plugboard** – łącznica kablowa do podstawiania znaków
 - **Klasa EnigmaEngine** – koordynacja całego procesu szyfrowania
@@ -104,7 +104,7 @@ Aplikacja okienkowa stworzona w CustomTkinter:
 ### Podstawowe szyfrowanie
 
 1. **Skonfiguruj wirniki:**
-   - Wybierz wirniki dla miejsc 1, 2, 3 (np. I, II, III)
+   - Wybierz wirniki dla miejsc 1, 2, 3 (np. I, II, III, IV, V)
    - Ustaw pozycje startowe (A–Z) dla każdego wirnika
    - Ustaw pierścienie (1–26) dla każdego wirnika
 
