@@ -186,3 +186,8 @@ class EnigmaEngine:
             middle_rotor.step()
 
         right_rotor.step()
+
+    def get_rotor_positions(self) -> List[int]:
+        """Return current rotor positions in slot order (1, 2, 3)."""
+        # Internal order is right->left (slot 3, 2, 1), so reverse to get slot 1, 2, 3
+        return [rotor.position for rotor in reversed(self.rotors)]

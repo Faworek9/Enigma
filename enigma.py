@@ -25,6 +25,12 @@ def akcja_szyfruj():
         wynik = engine.encrypt(wprowadzony_tekst)
         etykieta_wyniku.configure(text=f"Wynik: {wynik}")
         
+        # Update GUI with new rotor positions
+        new_positions = engine.get_rotor_positions()
+        menu_rotor1_pos.set(chr(new_positions[0] + ord('A')))
+        menu_rotor2_pos.set(chr(new_positions[1] + ord('A')))
+        menu_rotor3_pos.set(chr(new_positions[2] + ord('A')))
+        
         # Add to history
         pole_historii.configure(state="normal")
         pole_historii.insert("end", f"{wprowadzony_tekst.upper()} -> {wynik}\n")
@@ -46,6 +52,20 @@ def wyczysc_historie():
     pole_historii.configure(state="normal")
     pole_historii.delete("1.0", "end")
     pole_historii.configure(state="disabled")
+
+
+def resetuj_ustawienia():
+    menu_rotor1_order.set("I")
+    menu_rotor2_order.set("II")
+    menu_rotor3_order.set("III")
+    menu_rotor1_pos.set("A")
+    menu_rotor2_pos.set("A")
+    menu_rotor3_pos.set("A")
+    menu_rotor1_ring.set("1")
+    menu_rotor2_ring.set("1")
+    menu_rotor3_ring.set("1")
+    menu_plugboard.set("Domyślny")
+    etykieta_wyniku.configure(text="Wynik pojawi się tutaj")
 
 
 # --- KONFIGURACJA OKNA DESKTOPOWEGO ---
@@ -128,6 +148,9 @@ etykieta_wyniku.pack(pady=5)
 
 przycisk_kopiuj = ctk.CTkButton(app, text="Kopiuj wynik", command=kopiuj_wynik, width=150)
 przycisk_kopiuj.pack(pady=5)
+
+przycisk_reset = ctk.CTkButton(app, text="Powrót do ustawień początkowych", command=resetuj_ustawienia, width=200)
+przycisk_reset.pack(pady=5)
 
 etykieta_historii = ctk.CTkLabel(app, text="Historia szyfrowań:", font=("Arial", 12))
 etykieta_historii.pack(pady=(15, 5))
