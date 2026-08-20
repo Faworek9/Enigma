@@ -15,7 +15,7 @@ def akcja_szyfruj():
         plugboard_preset = menu_plugboard.get()
 
         if len(set(rotor_order)) != 3:
-            etykieta_wyniku.configure(text="Wynik: Wybierz unikalne wirniki I/II/III")
+            etykieta_wyniku.configure(text="Wynik: Wybierz unikalne wirniki I/II/III/IV/V")
             return
 
         engine = EnigmaEngine(
@@ -143,7 +143,7 @@ ramka_rotory.pack(pady=5)
 
 wartosci_pozycji = list("ABCDEFGHIJKLMNOPQRSTUVWXYZ")
 wartosci_pierscienia = [str(i) for i in range(1, 27)]
-wirniki = ["I", "II", "III"]
+wirniki = ["I", "II", "III", "IV", "V"]
 
 ctk.CTkLabel(ramka_rotory, text="Miejsce").grid(row=0, column=0, padx=8, pady=(8, 4))
 ctk.CTkLabel(ramka_rotory, text="Wirnik").grid(row=0, column=1, padx=8, pady=(8, 4))

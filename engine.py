@@ -7,6 +7,8 @@ ROTOR_SPECS: Dict[str, Dict[str, str]] = {
     "I": {"wiring": "EKMFLGDQVZNTOWYHXUSPAIBRCJ", "notch": "Q"},
     "II": {"wiring": "AJDKSIRUXBLHWTMCQGZNPYFVOE", "notch": "E"},
     "III": {"wiring": "BDFHJLCPRTXVZNYEIWGAKMUSQO", "notch": "V"},
+    "IV": {"wiring": "ESOVPZJAYQUIRHXLNFTGKDCMWB", "notch": "J"},
+    "V": {"wiring": "VZBRGITYUPSDNHLXAWMJQOFECK", "notch": "Z"},
 }
 
 REFLECTOR_B: str = "YRUHQSLDPXNGOKMIEBFZCWVJAT"
@@ -113,7 +115,7 @@ class EnigmaEngine:
             raise ValueError("Enigma I requires exactly 3 rotor positions, ring settings, and rotor names.")
 
         if len(set(rotor_order)) != 3:
-            raise ValueError("Rotor order must contain three unique rotors (I, II, III).")
+            raise ValueError("Rotor order must contain three unique rotors (I, II, III, IV, V).")
 
         for rotor_name in rotor_order:
             if rotor_name not in ROTOR_SPECS:
