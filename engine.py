@@ -1,7 +1,15 @@
-from typing import List
+from typing import Dict, List
 
 
-ALPHABET: List[str] = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z']
+ALPHABET: str = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+
+ROTOR_SPECS: Dict[str, Dict[str, str]] = {
+    "I": {"wiring": "EKMFLGDQVZNTOWYHXUSPAIBRCJ", "notch": "Q"},
+    "II": {"wiring": "AJDKSIRUXBLHWTMCQGZNPYFVOE", "notch": "E"},
+    "III": {"wiring": "BDFHJLCPRTXVZNYEIWGAKMUSQO", "notch": "V"},
+}
+
+REFLECTOR_B: str = "YRUHQSLDPXNGOKMIEBFZCWVJAT"
 
 
 class Plugboard:
@@ -14,7 +22,7 @@ class Plugboard:
     
     def _build_wiring(self) -> None:
         """Build wiring array from swap dictionary."""
-        self.wiring = ALPHABET.copy()
+        self.wiring = list(ALPHABET)
         for char, swap in self.swaps.items():
             if char in ALPHABET and swap in ALPHABET:
                 idx = ALPHABET.index(char)
@@ -28,71 +36,102 @@ class Plugboard:
 
 
 class Rotor:
-    """Represents a single Enigma rotor with wiring and rotation."""
-    
-    def __init__(self, wiring: List[str], start_offset: int = 0) -> None:
-        """Initialize rotor with wiring and starting offset (0-25)."""
-        self.wiring = wiring.copy()
-        self.start_offset = start_offset
-        self.rotation_count = 0
-        self._set_start_position()
-    
-    def _set_start_position(self) -> None:
-        """Shift wiring to match starting offset (0 = no rotation, 1-25 = steps)."""
-        for _ in range(self.start_offset):
-            self.wiring = [self.wiring[-1]] + self.wiring[:-1]
-    
+    """Represents a single Enigma I rotor with notch turnover and ring setting."""
+
+    def __init__(self, wiring: str, notch: str, position: int = 0, ring_setting: int = 0) -> None:
+        self.forward_map = [ALPHABET.index(char) for char in wiring]
+        self.reverse_map = [0] * 26
+        for idx, mapped in enumerate(self.forward_map):
+            self.reverse_map[mapped] = idx
+
+        self.notch_index = ALPHABET.index(notch)
+        self.position = position % 26
+        self.ring_setting = ring_setting % 26
+
+    def at_notch(self) -> bool:
+        """Return True when rotor is at turnover position (adjusted by ring setting)."""
+        turnover_position = (self.notch_index - self.ring_setting) % 26
+        return self.position == turnover_position
+
     def forward(self, char: str) -> str:
-        """Pass character through rotor in forward direction."""
+        """Pass character through rotor in forward direction (keyboard -> reflector)."""
         if char not in ALPHABET:
             return char
-        return self.wiring[ALPHABET.index(char)]
+
+        input_idx = ALPHABET.index(char)
+        shifted_idx = (input_idx + self.position - self.ring_setting) % 26
+        mapped_idx = self.forward_map[shifted_idx]
+        output_idx = (mapped_idx - self.position + self.ring_setting) % 26
+        return ALPHABET[output_idx]
     
     def backward(self, char: str) -> str:
-        """Pass character through rotor in reverse direction."""
+        """Pass character through rotor in reverse direction (reflector -> keyboard)."""
         if char not in ALPHABET:
             return char
-        return ALPHABET[self.wiring.index(char)]
+
+        input_idx = ALPHABET.index(char)
+        shifted_idx = (input_idx + self.position - self.ring_setting) % 26
+        mapped_idx = self.reverse_map[shifted_idx]
+        output_idx = (mapped_idx - self.position + self.ring_setting) % 26
+        return ALPHABET[output_idx]
     
-    def rotate(self) -> None:
-        """Rotate rotor by one position using modulo arithmetic."""
-        self.wiring = [self.wiring[-1]] + self.wiring[:-1]
-        self.rotation_count += 1
-    
-    def reset_rotation_count(self) -> None:
-        """Reset rotation count to zero."""
-        self.rotation_count = 0
+    def step(self) -> None:
+        """Step rotor by one position."""
+        self.position = (self.position + 1) % 26
 
 
 class Reflector:
     """Represents the reflector (Reflector B)."""
     
-    def __init__(self, wiring: List[str]) -> None:
+    def __init__(self, wiring: str) -> None:
         """Initialize reflector with wiring."""
-        self.wiring = wiring
+        self.wiring = [ALPHABET.index(char) for char in wiring]
     
     def reflect(self, char: str) -> str:
         """Reflect character through reflector wiring."""
         if char not in ALPHABET:
             return char
-        return self.wiring[ALPHABET.index(char)]
+        return ALPHABET[self.wiring[ALPHABET.index(char)]]
 
 
 class EnigmaEngine:
     """Manages the full Enigma encryption process."""
     
-    def __init__(self, rotor1_pos: int = 0, rotor2_pos: int = 0, rotor3_pos: int = 0, plugboard_preset: str = 'Brak') -> None:
-        """Initialize Enigma engine with configurable rotor positions (0-25) and plugboard preset."""
-        rotor_i_wiring = ['E', 'K', 'M', 'F', 'L', 'G', 'D', 'Q', 'V', 'Z', 'N', 'T', 'O', 'W', 'Y', 'H', 'X', 'U', 'S', 'P', 'A', 'I', 'B', 'R', 'C', 'J']
-        rotor_ii_wiring = ['A', 'J', 'D', 'K', 'S', 'I', 'R', 'U', 'X', 'B', 'L', 'H', 'W', 'T', 'M', 'C', 'Q', 'G', 'Z', 'N', 'P', 'Y', 'F', 'V', 'O', 'E']
-        rotor_iii_wiring = ['B', 'D', 'F', 'H', 'J', 'L', 'C', 'P', 'R', 'T', 'X', 'V', 'Z', 'N', 'Y', 'E', 'I', 'W', 'G', 'A', 'K', 'M', 'U', 'S', 'Q', 'O']
-        reflector_b_wiring = ['Y', 'R', 'U', 'H', 'Q', 'S', 'L', 'D', 'P', 'X', 'N', 'G', 'O', 'K', 'M', 'I', 'E', 'B', 'F', 'Z', 'C', 'W', 'V', 'J', 'A', 'T']
-        
+    def __init__(
+        self,
+        rotor_positions: List[int] = None,
+        ring_settings: List[int] = None,
+        rotor_order: List[str] = None,
+        plugboard_preset: str = "Brak",
+    ) -> None:
+        """Initialize Enigma I using left-to-right rotor config (slot 1,2,3)."""
+        rotor_positions = rotor_positions if rotor_positions else [0, 0, 0]
+        ring_settings = ring_settings if ring_settings else [0, 0, 0]
+        rotor_order = rotor_order if rotor_order else ["I", "II", "III"]
+
+        if len(rotor_positions) != 3 or len(ring_settings) != 3 or len(rotor_order) != 3:
+            raise ValueError("Enigma I requires exactly 3 rotor positions, ring settings, and rotor names.")
+
+        if len(set(rotor_order)) != 3:
+            raise ValueError("Rotor order must contain three unique rotors (I, II, III).")
+
+        for rotor_name in rotor_order:
+            if rotor_name not in ROTOR_SPECS:
+                raise ValueError(f"Unsupported rotor: {rotor_name}")
+
         self.plugboard = Plugboard(self._get_plugboard_swaps(plugboard_preset))
-        self.rotor1 = Rotor(rotor_i_wiring, rotor1_pos)
-        self.rotor2 = Rotor(rotor_ii_wiring, rotor2_pos)
-        self.rotor3 = Rotor(rotor_iii_wiring, rotor3_pos)
-        self.reflector = Reflector(reflector_b_wiring)
+        # Internal order is right->left because the signal enters the right rotor first.
+        self.rotors = []
+        for rotor_name, position, ring_setting in reversed(list(zip(rotor_order, rotor_positions, ring_settings))):
+            self.rotors.append(
+                Rotor(
+                    ROTOR_SPECS[rotor_name]["wiring"],
+                    ROTOR_SPECS[rotor_name]["notch"],
+                    position,
+                    ring_setting,
+                )
+            )
+        self.reflector = Reflector(REFLECTOR_B)
     
     def _get_plugboard_swaps(self, preset: str) -> dict:
         """Return swap dictionary for selected plugboard preset."""
@@ -105,7 +144,7 @@ class EnigmaEngine:
         return presets.get(preset, {})
     
     def encrypt(self, text: str) -> str:
-        """Encrypt text through full Enigma path with rotor cascade."""
+        """Encrypt text through full Enigma I signal path."""
         text = text.upper()
         result = ""
         
@@ -113,35 +152,37 @@ class EnigmaEngine:
             if char not in ALPHABET:
                 result += char
                 continue
+
+            self._step_rotors()
             
-            # Forward path: Plugboard -> Rotor1 -> Rotor2 -> Rotor3 -> Reflector
+            # Forward path: Plugboard -> right rotor -> middle rotor -> left rotor -> Reflector
             char = self.plugboard.substitute(char)
-            char = self.rotor1.forward(char)
-            char = self.rotor2.forward(char)
-            char = self.rotor3.forward(char)
+            for rotor in self.rotors:
+                char = rotor.forward(char)
             char = self.reflector.reflect(char)
             
-            # Reverse path: Rotor3 -> Rotor2 -> Rotor1 -> Plugboard
-            char = self.rotor3.backward(char)
-            char = self.rotor2.backward(char)
-            char = self.rotor1.backward(char)
+            # Reverse path: left rotor -> middle rotor -> right rotor -> Plugboard
+            for rotor in reversed(self.rotors):
+                char = rotor.backward(char)
             char = self.plugboard.substitute(char)
             
             result += char
-            
-            # Cascade rotor rotation
-            self._rotate_rotors()
         
         return result
     
-    def _rotate_rotors(self) -> None:
-        """Handle cascading rotor rotation."""
-        self.rotor1.rotate()
-        
-        if self.rotor1.rotation_count == 26:
-            self.rotor2.rotate()
-            self.rotor1.reset_rotation_count()
-        
-        if self.rotor2.rotation_count == 26:
-            self.rotor3.rotate()
-            self.rotor2.reset_rotation_count()
+    def _step_rotors(self) -> None:
+        """Apply historical Enigma stepping with notch turnover and double-stepping."""
+        right_rotor = self.rotors[0]
+        middle_rotor = self.rotors[1]
+        left_rotor = self.rotors[2]
+
+        middle_at_notch = middle_rotor.at_notch()
+        right_at_notch = right_rotor.at_notch()
+
+        if middle_at_notch:
+            left_rotor.step()
+            middle_rotor.step()
+        elif right_at_notch:
+            middle_rotor.step()
+
+        right_rotor.step()
