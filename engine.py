@@ -39,7 +39,6 @@ class Plugboard:
 
 class Rotor:
     """Represents a single Enigma I rotor with notch turnover and ring setting."""
-
     def __init__(self, wiring: str, notch: str, position: int = 0, ring_setting: int = 0) -> None:
         self.forward_map = [ALPHABET.index(char) for char in wiring]
         self.reverse_map = [0] * 26
@@ -59,7 +58,6 @@ class Rotor:
         """Pass character through rotor in forward direction (keyboard -> reflector)."""
         if char not in ALPHABET:
             return char
-
         input_idx = ALPHABET.index(char)
         shifted_idx = (input_idx + self.position - self.ring_setting) % 26
         mapped_idx = self.forward_map[shifted_idx]

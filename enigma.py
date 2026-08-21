@@ -129,7 +129,7 @@ ctk.set_default_color_theme("blue")
 
 app = ctk.CTk()
 app.title("Enigma Desktop")
-app.geometry("500x760")
+app.geometry("500x980")
 
 tytul = ctk.CTkLabel(app, text="Szyfrator Enigma", font=("Arial", 20, "bold"))
 tytul.pack(pady=15)
